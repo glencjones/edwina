@@ -64,6 +64,9 @@
   :type 'integer
   :group 'edwina)
 
+(defvar edwina-buffer-filter nil
+  "A function that is used to ignore specific types of buffer")
+
 (defvar edwina-layout 'edwina-tall-layout
   "The current Edwina layout.
 A layout is a function that takes a list of panes, and arranges them into
@@ -131,8 +134,15 @@ a buffer and other information."
 (defun edwina--display-buffer (display-buffer &rest args)
   "Apply DISPLAY-BUFFER to ARGS and arrange windows.
 Meant to be used as advice :around `display-buffer'."
-  (edwina--respective-window (apply display-buffer args)
-    (edwina-arrange)))
+ (if (if (boundp 'edwina-buffer-filter) (not (funcall edwina-buffer-filter (car args))) t)
+      (progn
+        (message "[EDWINA] %s %s" args (type-of (car args)))
+        (message "[EDWINA] Processing as Edwina buffer %s" (current-buffer) )
+        (edwina--respective-window (apply display-buffer args) (edwina-arrange) )
+        )
+   (display-buffer args)
+    )
+  )
 
 (defun edwina-stack-layout (panes)
   "Edwina layout that stacks PANES evenly on top of each other."
