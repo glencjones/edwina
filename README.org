@@ -34,6 +34,7 @@ Then add its location to =load-path=:
 
 ** use-package
 
+*** Typical use-package
 Here's a complete example configuration with =use-package= for reference:
 
 #+BEGIN_SRC emacs-lisp
@@ -43,6 +44,12 @@ Here's a complete example configuration with =use-package= for reference:
     (setq display-buffer-base-action '(display-buffer-below-selected))
     (edwina-setup-dwm-keys)
     (edwina-mode 1))
+#+END_SRC
+
+*** Configuration for doom.
+
+#+BEGIN_SRC emacs-lisp
+(package! edwina :recipe (:host github :repo "glencjones/edwina") )
 #+END_SRC
 
 * Usage
@@ -68,6 +75,17 @@ of the master area, the number of windows in master, the order of
 windows, and the current layout. By operating on these parameters
 instead of manually manipulating individual windows, you can greatly
 reduce the effort required to resize and reposition windows.
+
+* Buffer filtering
+
+You can get Edwina to ignore specific buffers by implementing a filter function.
+
+#+BEGIN_EXAMPLE
+  (defun doom-popup-filter (in-buffer)
+    (if (string-match-p "popup" (buffer-name in-buffer) ) t nil)
+    )
+  (setq! edwina-buffer-filter #'doom-popup-filter)
+#+END_EXAMPLE
 
 * Key Bindings
 
