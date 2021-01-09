@@ -134,13 +134,15 @@ a buffer and other information."
 (defun edwina--display-buffer (display-buffer &rest args)
   "Apply DISPLAY-BUFFER to ARGS and arrange windows.
 Meant to be used as advice :around `display-buffer'."
- (if (if (boundp 'edwina-buffer-filter) (not (funcall edwina-buffer-filter (car args))) t)
+  (if (if (and (boundp 'edwina-buffer-filter)
+               edwina-buffer-filter)
+          (not (funcall edwina-buffer-filter (car args))) t)
       (progn
         (message "[EDWINA] %s %s" args (type-of (car args)))
         (message "[EDWINA] Processing as Edwina buffer %s" (current-buffer) )
         (edwina--respective-window (apply display-buffer args) (edwina-arrange) )
         )
-   (display-buffer args)
+   (apply display-buffer args)
     )
   )
 
